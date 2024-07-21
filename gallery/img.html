@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+<style>
+    /* Animations */
+    @keyframes fadeIn {
+        0% {opacity: 0}
+        100% {opacity: 1}
+    }
+    body {
+        font-family: 'メイリオ', 'Meiryo', sans-serif;
+        margin: 10px;
+        padding: 0;
+        color: #ffffff;
+        background: rgba(0,0,0,0.8);
+        animation: fadeIn 1s ease 0s 1 normal;
+        text-align: center;
+    }
+    .thumbnail-container {
+        width: 150px;
+        height: 150px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 5px;
+    }
+    .thumbnail {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        object-fit: contain;
+        transition: transform 0.3s, border 0.3s;
+    }
+    .thumbnail:hover {
+        transform: scale(1.1);
+        border: 2px solid #f1f1f1;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 60px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        vertical-align: middle;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+        width: auto;
+        height: auto;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        animation: fadeIn 0.5s;
+    }
+    .modal-content img {
+        width: 100%;
+        height: auto;
+        display: block;
+        max-height: 80vh; /* 最大高さをビューポートの80%に制限 */
+        object-fit: contain;
+        margin: auto;
+    }
+    .modal-content:hover {
+        cursor: pointer;
+    }
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 10%;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        transition: background-color 0.3s;
+    }
+    .prev {
+        left: 0;
+    }
+    .next {
+        right: 0;
+    }
+    .prev:hover, .next:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 81;
+    }
+    .close:hover,
+    .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+
+</head>
+<body>
+
+<h1>▼画像</h1>
+
+<div style="display: inline-block; height: 150px; vertical-align: middle;"></div>
+<!-- Thumbnail images -->
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/001.jpg" onclick="openModal();currentSlide(1)" alt="Image 1"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/002.jpg" onclick="openModal();currentSlide(2)" alt="Image 2"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/003.jpg" onclick="openModal();currentSlide(3)" alt="Image 3"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/004.jpg" onclick="openModal();currentSlide(4)" alt="Image 4"></div>
+
+<!-- The Modal/Lightbox -->
+<div id="myModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-content">
+        <img id="modal-image" src="">
+    </div>
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<script>
+let slideIndex = 1;
+
+function openModal() {
+    document.getElementById('myModal').style.display = "block";
+    showSlides(slideIndex);
+}
+
+function closeModal() {
+    document.getElementById('myModal').style.display = "none";
+}
+
+function changeSlide(n) {
+    showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+    showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+    const slides = ["image/001.jpg", "image/002.jpg", "image/003.jpg", "image/004.jpg"];
+    if (n > slides.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = slides.length }
+    document.getElementById("modal-image").src = slides[slideIndex - 1];
+}
+
+</script>
+
+<!--, "image/005.jpg",
+                    "image/006.jpg", "image/007.jpg", "image/008.jpg", "image/009.jpg", "image/010.jpg",
+                    "image/011.jpg", "image/012.jpg", "image/013.jpg", "image/014.jpg", "image/015.jpg"-->
+
+
+</body>
+</html>
