@@ -113,9 +113,17 @@
         text-decoration: none;
         cursor: pointer;
     }
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
 </style>
-
-
 </head>
 <body>
 
@@ -123,16 +131,20 @@
 
 <div style="display: inline-block; height: 150px; vertical-align: middle;"></div>
 <!-- Thumbnail images -->
-<div class="thumbnail-container"><img class="thumbnail" src="image/resize/001.jpg" onclick="openModal();currentSlide(1)" alt="Image 1"></div>
-<div class="thumbnail-container"><img class="thumbnail" src="image/resize/002.jpg" onclick="openModal();currentSlide(2)" alt="Image 2"></div>
-<div class="thumbnail-container"><img class="thumbnail" src="image/resize/003.jpg" onclick="openModal();currentSlide(3)" alt="Image 3"></div>
-<div class="thumbnail-container"><img class="thumbnail" src="image/resize/004.jpg" onclick="openModal();currentSlide(4)" alt="Image 4"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/001.jpg" onclick="openModal();currentSlide(1)" alt="「？」"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/002.jpg" onclick="openModal();currentSlide(2)" alt="「フェラ抜きなら安くしとくっすよ？」"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/003.jpg" onclick="openModal();currentSlide(3)" alt="最近暑いので"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/004.jpg" onclick="openModal();currentSlide(4)" alt="路地裏にて"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/005.jpg" onclick="openModal();currentSlide(5)" alt="「挿入ったっすねぇ……♥　お好きにどうぞ～♥」"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/006.jpg" onclick="openModal();currentSlide(6)" alt="（……こいつ、けっこういいトコ当てて……♥　……あっ ）"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="image/resize/007.jpg" onclick="openModal();currentSlide(7)" alt="（やば……♥　これ……本気で……イッ……♥♥～～～♥♥♥ ）"></div>
 
 <!-- The Modal/Lightbox -->
 <div id="myModal" class="modal">
     <span class="close" onclick="closeModal()">&times;</span>
     <div class="modal-content">
         <img id="modal-image" src="">
+        <div id="caption"></div>
     </div>
     <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
     <a class="next" onclick="changeSlide(1)">&#10095;</a>
@@ -159,18 +171,15 @@ function currentSlide(n) {
 }
 
 function showSlides(n) {
-    const slides = ["image/001.jpg", "image/002.jpg", "image/003.jpg", "image/004.jpg"];
+    const slides = document.querySelectorAll(".thumbnail");
     if (n > slides.length) { slideIndex = 1 }
     if (n < 1) { slideIndex = slides.length }
-    document.getElementById("modal-image").src = slides[slideIndex - 1];
+    const slide = slides[slideIndex - 1];
+    document.getElementById("modal-image").src = slide.src.replace("resize/", "");
+    document.getElementById("caption").innerHTML = slide.alt;
 }
 
 </script>
-
-<!--, "image/005.jpg",
-                    "image/006.jpg", "image/007.jpg", "image/008.jpg", "image/009.jpg", "image/010.jpg",
-                    "image/011.jpg", "image/012.jpg", "image/013.jpg", "image/014.jpg", "image/015.jpg"-->
-
 
 </body>
 </html>
