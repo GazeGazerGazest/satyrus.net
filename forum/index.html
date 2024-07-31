@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Gallery</title>
+<style>
+    /* Animations */
+    @keyframes fadeIn {
+        0% {opacity: 0}
+        100% {opacity: 1}
+    }
+    body {
+        font-family: 'メイリオ', 'Meiryo', sans-serif;
+        margin: 10px;
+        padding: 0;
+        color: #ffffff;
+        background: rgba(0,0,0,0.8);
+        animation: fadeIn 1s ease 0s 1 normal;
+        text-align: center;
+    }
+    .thumbnail-container {
+        width: 80%;
+        height: 20px;
+        display: inline-block;
+        text-align: left;
+        vertical-align: middle;
+        margin: 5px;
+        border: 1px solid #f1f1f1;
+        background-color: rgba(32,32,32,1);
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.3s, border 0.3s;
+    }
+    .thumbnail-container:hover {
+        transform: scale(1.1);
+        border: 2px solid #f1f1f1;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 30px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        vertical-align: middle;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 60%;
+        max-height: 85%;
+        text-align: left;
+        width: auto;
+        height: auto;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        animation: fadeIn 0.5s;
+        padding: 20px;
+        background: #333;
+        color: #fff;
+        overflow-y: auto; /* オーバーフローをスクロールに設定 */
+    }
+    .modal-content:hover {
+        cursor: pointer;
+    }
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 10%;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        transition: background-color 0.3s;
+    }
+    .prev {
+        left: 0;
+    }
+    .next {
+        right: 0;
+    }
+    .prev:hover, .next:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 81;
+    }
+    .close:hover,
+    .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .expanded-img-container {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        padding-top: 30px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    .expanded-img-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+        width: auto;
+        height: auto;
+    }
+    .expanded-img-content img {
+        max-width: 80%;
+        max-height: 80%;
+        align-items: center;
+    }
+    .expanded-img-close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .expanded-img-close:hover,
+    .expanded-img-close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>▼話題まとめ</h1>
+
+<div style="display: inline-block; height: 150px; vertical-align: middle;"></div>
+<!-- Thumbnail texts -->
+<div class="thumbnail-container" onclick="openModal();currentSlide(1)">現在のリクエスト一覧</div>
+<div class="thumbnail-container" onclick="openModal();currentSlide(2)">各キャラクターの描画コスト参考</div>
+<div class="thumbnail-container" onclick="openModal();currentSlide(3)">ラバソキャラの性事情</div>
+
+<!-- The Modal/Lightbox -->
+<div id="myModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-content" id="modal-text">
+        <div id="modal-inner-content"></div>
+    </div>
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<!-- Expanded Image Modal -->
+<div id="expandedImgContainer" class="expanded-img-container">
+    <span class="expanded-img-close" onclick="closeExpandedImg()">&times;</span>
+    <div class="expanded-img-content">
+        <img id="expandedImg" src="">
+    </div>
+</div>
+
+<script>
+let slideIndex = 1;
+
+function openModal() {
+    document.getElementById('myModal').style.display = "block";
+    showSlides(slideIndex);
+}
+
+function closeModal() {
+    document.getElementById('myModal').style.display = "none";
+}
+
+function changeSlide(n) {
+    showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+    showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+    const contents = [
+        '<h1>▼現在のリクエスト</h1><p>【ラバソ】あ、半集合写真の水着左沢と水着イータをイラスト調にした単体絵が欲しいかも</p><p>【ヤギ】各自の単体絵ですか？</p><p>【ラバソ】各自の単体絵です</p>',
+        '<h1>▼各キャラクターの描画コスト参考</h1><p>【イータ】☆★★★★<br>　髪型が変則的なのでそこで手間取る。コラージュやペン入れを繰り返す必要があり生産速度は遅め。<br>イータ自身の性格上や感度の関係でシチュも難航する。でも腋毛生えてるしおっぱいでかいから好きだよ。<br><br>【左沢】☆☆☆★★<br>　五本角の再現でやや手間取る。<br>　金払えば何でもするタイプだと思うのでシチュエーション自体はトップクラスに作りやすい。あとケツデカいから好きだよ。<br><br>【美奈】☆☆☆☆☆<br>　デザインがAI向きなのか、かなり理解度の高い絵を出力する。<br>　前髪がどうしても纏まってしまうのであのギザギザで不規則な前髪は再現できないが、そこに目を瞑ればかなりの速度で量産できる。<br>　あと設定がエロ創作向け。<br><br>【360°ちゃん】☆☆☆☆☆<br>　意外とデザインがAI向きなようで、それほど苦労なく作れた。グル目はリテイクが必要。<br>　キャラがキャラなのでセックス中の言動が見当つかないのが難点。<br><br>【リオン】☆☆☆☆★（4.5ぐらい）<br>　どういうわけか髪の向きがほぼ右流れ（左目に寄る）になることを除けばほぼ完璧に再現できる。目のデザインだけどうにもならないのでペン入れが必要。<br>　ここ数日こいつのエロ画像量産してたのはこいつがエロいからというのもあるが、目のデザインを除けば生成が容易だったため。</p>',
+        '<h1>▼ラバソキャラの性事情</h1><p>【バスト】<br>　イータ≧咲＞＞碧花≧椀子≧左沢＞＞ほたて≧チェリー＞＞＞美奈＞＞＞ミロードちゃん≧ケイレン</p><p>【ヒップ】<br>左沢≧椀子＞＞イータ＞ほたて≧碧花＞咲＞＞美奈＞＞ケイレン＞＞チェリー＞＞ミロードちゃん</p><p>【毛の有無多少】（基本アンダー、イータのみ脇にも有）<br>イータ：有/多/薄　左沢：有/少/濃　咲：有/多/薄　ほたて：有/少/濃　チェリー：無<br>美奈：有/少/薄　ナナメ：有/少/濃　ミロードちゃん：有/少/薄　椀子：有/多/濃　ケイレン：有/多/濃</p><p>【性欲の高低】<br>イータ：低　左沢：高　咲：高　ほたて：高　チェリー：高<br>美奈：高　ナナメ：低　ミロードちゃん：低　椀子：低　ケイレン：高</p><p>【感度の高低、またそれが態度に出るかどうか】（特記無しはそのまま）<br>イータ：低　左沢：普通　咲：高/態度に出る　ほたて：普通/隠そうとする　チェリー：普通<br>美奈：高/必死に隠そうとする　ナナメ：低　ミロードちゃん：低　椀子：普通　ケイレン：普通</p><p>【セックス時の……スタンス？】　意外と甘えたがりとかSMプレイ気質とかそもそも無知シチュとか<br>イータ：無知？　左沢：ほぼ商売　咲：舐めるのと舐められるのが好き　チェリー：リードする<br>美奈：意外と甘えたがり　ナナメ：万が一にしたとして、おそらく最序盤ですぐに切り上げる　ミロードちゃん：耳たぶを噛んでくる</p>'
+    ];
+    if (n > contents.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = contents.length }
+    const content = contents[slideIndex - 1];
+    document.getElementById("modal-inner-content").innerHTML = content;
+}
+
+function expandImg(img) {
+    const expandedImg = document.getElementById("expandedImg");
+    const expandedImgContainer = document.getElementById("expandedImgContainer");
+    expandedImg.src = img.src;
+    expandedImgContainer.style.display = "block";
+}
+
+function closeExpandedImg() {
+    document.getElementById("expandedImgContainer").style.display = "none";
+}
+</script>
+
+</body>
+</html>
