@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Gallery</title>
+<style>
+    /* Animations */
+    @keyframes fadeIn {
+        0% {opacity: 0}
+        100% {opacity: 1}
+    }
+    body {
+        font-family: 'メイリオ', 'Meiryo', sans-serif;
+        margin: 10px;
+        padding: 0;
+        color: #ffffff;
+        background: rgba(0,0,0,0.8);
+        animation: fadeIn 1s ease 0s 1 normal;
+        text-align: center;
+    }
+    .thumbnail-container {
+        width: 120px;
+        height: 150px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 5px;
+        border: 1px solid #f1f1f1;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.3s, border 0.3s;
+    }
+    .thumbnail-container:hover {
+        transform: scale(1.1);
+        border: 2px solid #f1f1f1;
+        text-align: center;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 30px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        vertical-align: middle;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 60%;
+        max-height: 85%;
+        text-align: left;
+        width: auto;
+        height: auto;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        animation: fadeIn 0.5s;
+        padding: 20px;
+        background: #333;
+        color: #fff;
+        overflow-y: auto; /* オーバーフローをスクロールに設定 */
+    }
+    .modal-content:hover {
+        cursor: pointer;
+    }
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 10%;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        transition: background-color 0.3s;
+    }
+    .prev {
+        left: 0;
+    }
+    .next {
+        right: 0;
+    }
+    .prev:hover, .next:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        z-index: 81;
+    }
+    .close:hover,
+    .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .expanded-img-container {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        padding-top: 30px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+    .expanded-img-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+        width: auto;
+        height: auto;
+    }
+    .expanded-img-content img {
+        max-width: 80%;
+        max-height: 80%;
+        align-items: center;
+    }
+    .expanded-img-close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .expanded-img-close:hover,
+    .expanded-img-close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>▼小説（♀）</h1>
+
+<div style="display: inline-block; height: 150px; vertical-align: middle;"></div>
+<!-- Thumbnail texts -->
+<div class="thumbnail-container" onclick="openModal();currentSlide(1)"><img src="img/24112601.jpg" alt="表紙" height="125px"><br>愛しい家族</div>
+
+<!-- The Modal/Lightbox -->
+<div id="myModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div class="modal-content" id="modal-text">
+        <div id="modal-inner-content"></div>
+    </div>
+    <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+    <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+
+<!-- Expanded Image Modal -->
+<div id="expandedImgContainer" class="expanded-img-container">
+    <span class="expanded-img-close" onclick="closeExpandedImg()">&times;</span>
+    <div class="expanded-img-content">
+        <img id="expandedImg" src="">
+    </div>
+</div>
+
+<script>
+let slideIndex = 1;
+
+function openModal() {
+    document.getElementById('myModal').style.display = "block";
+    showSlides(slideIndex);
+}
+
+function closeModal() {
+    document.getElementById('myModal').style.display = "none";
+}
+
+function changeSlide(n) {
+    showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+    showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+    const contents = [
+        '<h1>▼愛しい家族</h1><p>　最初に見えたものは、薄暗い部屋の天井だった。<br>　見覚えのない照明を見つめて、此処が見知らぬ部屋であることをぼんやり悟る。<br>　周りを見渡しても、家具の類はほぼない。私が今横になっているベッド以外は、小さな椅子と机が一つずつある程度。<br>　いずれにせよ殺風景で、日頃から人が住んでいるような感じではない。強いていうなら寝室の間取りを連想するか。<br><br>　本来であれば「此処は一体」とパニックになるところだろう。<br>　ただ私の場合は、意識を失う直前にあったことを憶えていたから、それほど不思議な状況ではないと思った。<br><br>「あらあら、お目覚めですかニャ？」<br><br>　声は、部屋の入口から響いた。<br>　白磁色の髪をした女性が一人、電子タバコを片手にこちらを覗いていた。もう片手には紙袋を携えている。<br><br>　白のブラウスに黒いスカート、そして鈴のぶら下がった首輪。<br>　いわゆるモデル体型というのか、背丈こそ極端に高いわけではないが、すらりとした無駄のない体つきだった。<br>　目は全体のバランスを崩さない程度に大きくて、愛嬌を強く感じさせる顔つきをしている。<br><br>　ただ、それ以上に目を引くのは頭部に生えた猫の耳だった。臀部に至っては尻尾が二本も伸びている。<br>　ミュータントーー何らかの理由によって、特殊な身体形質を抱えた人々ーーの類なのだろう。<br>　異能によるものか、遺伝子改造の結果なのかはわからないけれど。<br><br>「良かった良かった。あんまり寝付き良いから、クスリの量間違えたかもって不安だったんだよね～」<br><br>　彼女は悪びれもせず言いながら、椅子を引いて私の真ん前になるよう座る。<br>　その間、首輪が音を奏でることはなかったので、鈴の中身は抜かれているのだろうか、なんて無駄な事を考える。<br><br>「……あなたは誰？/あなたが私を此処に？」<br>「【タマ】ちゃんでいーよー。んで、此処はタマちゃんの……家？　職場？」<br><br>　いずれにせよ、敵のアジトということで良さそうだ。<br>　ならばいきなり飛び出しても、脱出は難しいかもしれない。焦らず様子を見て、軽率な行動は慎むべきだろう。<br>　この部屋にカメラが設置してある可能性だってある。たとえばこの女をどうにかしても、援軍を呼ばれて捕まえればそれでお終いだ。<br><br>　ーー私は今回、探偵としてある事件を捜査していた。その過程で目星がついたのがこの“タマ”と名乗った女だった。<br>　そして決定的な証拠を掴むより先に、彼女らに勘付かれてしまったらしい。<br>　人気のない道を通ったタイミングで何者かに襲われ、意識を失った私は現在に至っている。<br><br>「私をどうするつもり？/……殺すの？」<br>「まぁまぁ。いったんその辺の話より、お互いを知るところから始めない？　タマちゃんもせっかく名乗ったんだしさぁ」<br>「…………」<br>「……んもう、ノリ悪～。社会じゃやっていけませんよそんな調子じゃ！」<br><br>　黙っていると、頬を膨らませた“タマ”が紙袋から小さな手帳を取り出した。私の学生証だ。<br><br>「【彩土 美奈】ちゃん、2128年9月3日生まれの17歳、身長137cm。現住所は中層の██地区█番」<br>「…………」<br>「████高等学校に在籍するが、クラスや学校に馴染めず孤立。家庭環境も機能不全気味で居場所なし、現在は知り合いの便利屋の下に入り浸る生活……」<br>「……そんな事まで書いてないでしょ」<br>「否定しないってことは、だいたい合ってるんだ？」<br><br>　くすくす笑う彼女に、睨み付けることで答える。<br>　私の素性については、既にそれなりの調べがついている、ということらしい。<br>　それから生徒手帳を用済みと言わんばかりに紙袋へ放り込むと、“タマ”が一方的に宣言した。<br><br>「でもそんな辛～い日々ももう終わり！　美奈ちゃんは、タマちゃんのペットとしてこれから幸せに暮らすの♥」<br>「……ペット？」<br>「そーそー。貴方はこれから、タマちゃんのことをご主人様って呼んで、タマちゃんの言うことはなんでも聞いて、同じ家族として……」<br>「……意味がわからない。/私はあなたのペットになる気なんかない……」<br>「え～？」<br><br>　突っぱねた私を、“タマ”が見つめる。<br>　表情に驚きとか苛立ちの色は全くない。ニヤニヤと笑う様はむしろ愉快げですらある。<br>　それが不愉快だった。<br><br>「どうして？　もう自分は【チェリー】ちゃんのペットだから？」<br><br>　――チェリーの事も、知っているのか。<br>　……まぁ、私のプライベートまで調べたのなら当然か。<br><br>「……ペットとか、主人とか……/チェリーとは……そういうのじゃない」<br>「じゃあカノジョ？　それともセックスフレンド？」<br>「…………」<br><br>　ピントのズレた質問責めに、ため息で答える。クラスメイトの屁理屈に付き合わされるような感覚だった。<br>　……だいたい、チェリーと私は同性だろう。<br>　そんな私のため息に構わず、“タマ”は言った。<br><br>「美奈ちゃんは自分のこと、チェリーちゃんにとって何だと思う？」<br>「…………え？」<br><br>　思いがけない問いに思わず気の抜けた声が漏れる。<br>　自分が……チェリーにとって？　……考えたこともなかった。<br>　どのみち彼女の質問に応えるつもりはないけれど、思わず考え込んでしまう。<br><br>「美奈ちゃん人質にとったらさぁ。チェリーちゃん、怒るかな？」<br><br>　どきりとする。私の身辺というよりチェリーを焦点にした問いだった。<br><br>「……チェリーは今、関係ない」<br>「関係ないことはないでしょ～。ほら。あの子、うちらの業界じゃ有名人じゃん」<br><br>　……初耳だが。<br><br>「……あ、ご存じない。うちらの業界じゃ有名人なんだけどね？　中層に上がってからもちょこちょこ下層の縄張り荒らすようなことしてるみたいでさぁ。わりと困ってたんだよね」<br>「……チェリーを釣るってこと？/私を囮にして……」<br>「そゆこと。嗅ぎ回ってるネズミを捕まえたら商売仇の小間使いだったってわけだし、有効活用しないとね？」<br>「……」<br><br>　チェリーが裏家業に関わっていたのは……まぁ、前々からその素振りがあった。本人は私たちに隠しているつもりみたいだったけど、今さら聞かされて驚くことでもない。<br>　それよりも辛いのは、この状況だった。私は今、“チェリーの弱みに成り得る存在”として品定めをされている。<br>　自分は、また彼女の足を引っ張っている。ーー悔しくて歯噛みする。<br><br>「……それ、無理だから」<br>「無理？」<br>「人質なんか取っても無駄……。/チェリーは……この事を知っても、私を助けに来たりしない」<br>「…………」<br><br>　まんざら、強がりで出た言葉というわけでもない。<br>　チェリーはあれでドライなところがある。行き場のない私を拾ってくれたのは事実だが、命を賭して私を助けに来てくれるとは思わない。私たちに裏の仕事を伏せていたのも、きっとその裏返しなのだろう。<br>　どちらにせよ、これ以上彼女の足手まといになるのは御免だった。この状況は私だけで切り抜けて見せる。<br><br>「……だっよね～。チェリーちゃん、そんな感じなんじゃないかな～と思ってたんだ～」<br><br>　タマが額に手をあて、コミカルにかぶりを振る。……想定通りの回答、ということらしかった。<br><br>「チェリーちゃん巻き込めれば最高だったんだけど、そういう感じなら美奈ちゃんにだけお仕置きしてカタつけてもらおっかなぁ。でも、ケジメで美奈ちゃんぐらいの子の命まで取るの、結構酷じゃん？」<br>「……だからペットになれば赦してあげる、ってこと？」<br>「そゆこと！　お話が一周しましたニャ」<br><br>　指をグルグルと回して“タマ”がお道化る。<br>　まぁ、こちらとしても彼女の言い分は理解できた。どこまで本心かはわからない、まだ裏がある可能性もあるにはあるのだが。<br>　だが、話が一周しただけなら、こちらも同じ答えを繰り返すだけだ。<br><br>「……私の答えは変わらない。/ペットになるつもりはないし……あなたたちに殺されてもーー」<br>「もし言う事聞けないんなら、【ハクラト】ちゃんもここに呼んじゃうけどニャ」　<br>「……え」<br><br>　一瞬、頭の中が真っ白になった。<br><br>「【アイゼン・ポー・ハクラト】。チェリーちゃんの助手。……知らないとでも思った？　もし私のペットになれないなら、あの子をタマちゃんのペットにしちゃおっかニャ～」<br>「……ハクラトは馬鹿だけど。/貴方たちに捕まるほど弱くない」<br>「そーみたいだね。でも、ウチに美奈ちゃんが遊びに来てるって言えば喜んで来てくれるんじゃない？」<br>「……ッ」<br><br>　悪寒が走った。“タマ”は口角を歪めたまま続ける。<br><br>「チェリーちゃんは貴方のことを見棄てるかもしれない。でも調べる限り、ハクラトちゃんはそんな性格には見えないなー？　自分のお友達を護るためなら、たとえ火の中水の中……って感じだよね？　あなたの身代わりになら喜んでなるんじゃない？」<br>「……やめて。/ハクラトは、関係ない……」<br>「関係ないかは貴方の返事次第だニャー。というわけで、タマちゃんのペットになるかどうかのお返事をどうぞ！」<br><br>　マイクを向けるようなジェスチャーと共に、“タマ”が今一度の回答を迫った。<br>　こちらに凄むような感じではなく、一貫してふざけた仕草なのに。それでいて、おちゃらけた態度のままにこんな残酷なことを口走る。<br>　この女は――悪魔だ。<br><br>「……何をすればいいの」<br>「お？　それは契約成立ってことでいいのかニャ？」<br>「……ハクラトやチェリーには……手を出させない。/……でも、できない事はできない……」<br><br>　口ごもる私を見て、“タマ”は紙袋から何かを取り出して床に投げる。<br>　それは床に衝突し、転がり、静止するまでの間、甲高い鈴の音を小刻みに奏でていた。<br>　――首輪だった。<br><br>「それ、首に着けて♥」<br><br>　思わず硬直する。<br>　首輪を着けるという行為そのものへの抵抗感ももちろん理由の一つだが。<br>　それ以上に、私は――「ペットになれ」という言葉の意味を、これまで捉えあぐねていたのだ。表現として抽象的すぎて、あるいは何かの暗喩だと思っていた。<br>　だから――正直、怖くなった。この女の言う「ペットになれ」という言葉は、自分の想像より遥かに"そのままの意味”なのではないか。そんな気がして。<br><br>「……ん？　どうしたの？　無理なら代打呼ぶ？」<br>「……うるさい」<br><br>　だが、今更引き返せない。これ以上二人に迷惑をかけるわけにはいかない。<br>　それに、この女の気まぐれに付き合っている途中で何か突破口が見つかるかもしれない。<br>　どのみち生き残るには、この女に従うふりをして寝首を掻くしかないのだ。<br><br>　そう自分に言い聞かせて、地面に転がった首輪を手に取る。<br>　持ち上げて首に巻く間、鈴の音がうるさかった。“タマ”の首輪にも鈴がついているけど、あちらはこんな音を立てない。鈴の中身が入っていないのだろうか。<br>　そんなどうでもいい事に思考が飛ぶのは、この恐怖と屈辱を紛らわそうとする防衛本能のようなものだろうか。<br><br>　カチリという金具の音と、リンという鈴の音が重なる。<br>　自分が首輪を嵌めたのだという厭な実感を、その二つの音色が強調した。<br><br>「これで美奈ちゃんは、私のペットだね」<br><br>　そう告げる“タマ”の笑顔に底冷えのするものを感じて、私は自分が取り返しのつかないことをわっふるわっふる</p>'
+    ];
+
+
+
+
+
+    if (n > contents.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = contents.length }
+    const content = contents[slideIndex - 1];
+    document.getElementById("modal-inner-content").innerHTML = content;
+}
+
+function expandImg(img) {
+    const expandedImg = document.getElementById("expandedImg");
+    const expandedImgContainer = document.getElementById("expandedImgContainer");
+    expandedImg.src = img.src;
+    expandedImgContainer.style.display = "block";
+}
+
+function closeExpandedImg() {
+    document.getElementById("expandedImgContainer").style.display = "none";
+}
+</script>
+
+</body>
+</html>
