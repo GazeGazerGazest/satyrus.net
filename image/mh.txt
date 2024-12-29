@@ -1,0 +1,4 @@
+
+<div class="thumbnail-container"><img class="thumbnail" src="img_wolf/resize/wl24103001.jpg" onclick="openModal();currentSlide(06)" alt="「……ああ、クソ！　まじまじ見てんじゃねぇ！　さっさとそのおっ勃ったモン何とかしろ！」"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="img_wolf/resize/wl24110101.jpg" onclick="openModal();currentSlide(07)" alt="身体の火照る夜"></div>
+<div class="thumbnail-container"><img class="thumbnail" src="img_wolf/resize/wl24110201.jpg" onclick="openModal();currentSlide(08)" alt="意外と素で楽しんでたりするかも"></div>
