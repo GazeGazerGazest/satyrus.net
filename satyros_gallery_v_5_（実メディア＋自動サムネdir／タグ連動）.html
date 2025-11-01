@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SATYROS // gallery v5</title>
+  <link rel="icon" href="symbol.png" />
+  <style>
+    :root{ --bg:#05040a;--fg:#e9fffb;--muted:#8aa39b;--line:#0d1220;--card:#090b12; --fx1:#ff2fb3;--fx2:#22d3ee;--fx3:#8b5cf6; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",Meiryo}
+
+    /* header */
+    .hdr{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(0,0,0,.8),rgba(0,0,0,.45));backdrop-filter:blur(6px)}
+    .hdr-in{max-width:1200px;margin:0 auto;padding:10px 14px;display:flex;gap:12px;align-items:center}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo img{width:28px;height:28px;filter:drop-shadow(0 0 10px rgba(255,47,179,.4))}
+    .sp{flex:1}
+    .search{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:6px 10px}
+    .search input{background:transparent;border:none;color:var(--fg);outline:none;min-width:200px}
+    .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+
+    /* layout */
+    .wrap{max-width:1200px;margin:0 auto;padding:16px;display:grid;gap:16px;grid-template-columns:260px 1fr}
+    .panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.2));overflow:hidden}
+    .panel h3{margin:0;padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);letter-spacing:.16em}
+
+    /* left: filters */
+    .left{padding:10px;display:grid;gap:10px}
+    .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:11px;background:var(--card)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:12px;background:#0a0d16;cursor:pointer}
+    .chip[data-on="true"]{box-shadow:inset 0 0 0 1px var(--fx2)}
+    .group-title{margin:8px 0 2px 2px;color:var(--muted);font-size:11px;letter-spacing:.18em}
+
+    /* grid */
+    .grid{padding:10px;display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:780px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}
+
+    /* card */
+    .card{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#0a0f19,#090b12)}
+    .media{aspect-ratio:4/3;position:relative;overflow:hidden;display:block;width:100%;cursor:pointer;background:#000}
+    .media::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 4px),linear-gradient(135deg, rgba(139,92,246,.3), rgba(34,211,238,.25));image-rendering:pixelated;filter:contrast(1.2) saturate(1.2)}
+    .media::after{content:"";position:absolute;inset:0;}
+    .thumb-img,.thumb-video{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb-video{opacity:.9}
+    .body{padding:10px;display:grid;gap:6px}
+    .row{display:flex;gap:8px;align-items:center}
+    .flag{font-size:10px;border:1px solid var(--line);color:#0b1020;background:linear-gradient(180deg,#ffde59,#ff6ea5);padding:2px 6px;border-radius:6px;letter-spacing:.14em;font-weight:900}
+    .id{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono";font-size:12px;color:var(--muted)}
+    .title{font-weight:800}
+    .tags{display:flex;flex-wrap:wrap;gap:6px}
+    .tag{font-size:11px;border:1px dashed var(--line);padding:2px 6px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .tag[data-on="true"]{box-shadow:inset 0 0 0 1px var(--fx2)}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);display:none;place-items:center;z-index:60}
+    .lightbox.show{display:grid}
+    .lb-inner{width:min(900px,92vw);background:#060811;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .lb-media{background:#000;display:grid;place-items:center;max-height:80vh}
+    .lb-media > img, .lb-media > video{max-width:100%;max-height:78vh;width:auto;height:auto;object-fit:contain}
+    .lb-body{padding:12px}
+
+    .foot{max-width:1200px;margin:20px auto;color:var(--muted);font-size:12px;padding:0 16px}
+  </style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-in">
+      <div class="logo"><img src="symbol.png" alt="SATYROS" /><b>SATYROS</b></div>
+      <div class="sp"></div>
+      <label class="search" role="search"><input id="q" placeholder="検索（タイトル/タグ/ID/技名）"></label>
+      <button class="btn" id="blurToggle">BLUR</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <aside class="panel"><h3>FILTERS</h3><div class="left" id="filters"></div></aside>
+    <section class="panel"><h3>GALLERY</h3><div class="grid" id="grid"></div></section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="preview">
+    <div class="lb-inner">
+      <div class="lb-media" id="lbMedia"></div>
+      <div class="lb-body"><div id="lbTags" class="tags"></div></div>
+    </div>
+  </div>
+
+  <footer class="foot">注記：このページは TRPG 世界観用の UI デモです。表示されるカードはすべてダミーであり、実在の人物・団体・出来事に関係しません。</footer>
+
+  <script type="module">
+    // ====== config ======
+    const MEDIA_DIR = 'image';        // 実ファイルのディレクトリ（ユーザーが自由に命名）
+    const THUMB_DIR = 'image/resize'; // サムネは自動でここにある前提（派生）
+
+    // ====== sample vocab ======
+    const TAGS=['tiger','wolf','fox','hawk','owl','boar','bear','lynx','eagle','shark','seal','whale','otter','rabbit','deer','horse','cat','dog','mouse','crow'];
+    const MOVES=['suplex','lariat','moonsault','powerbomb','piledriver','armbar','dropkick','german','ddt','frog_splash','chop','spear','cloverleaf','sharpshooter','backbreaker','bulldog','neckbreaker','kneestrike','brainbuster','bkspin'];
+
+    // ====== data (ファイル名はあなたが決める: file / thumb は任意) ======
+    // file: 実メディアのファイル名（拡張子込み）。相対/絶対OK。thumb 未指定時は THUMB_DIR から basename を自動採用。
+    // 動画のとき thumb 未指定なら、basename の拡張子を .jpg に置換して THUMB_DIR から参照します。
+    const POSTS = [
+      { id:'K-1000', title:'montage:bear_deer', tags:['bear','deer'], moves:['ddt'], kind:'image', file:'25052101.jpg',  ts: Date.now()-1000*60*20 },
+      { id:'K-1001', title:'montage:fox_rabbit', tags:['fox','rabbit'], moves:['armbar','kneestrike'], kind:'video', file:'clip001.mp4', ts: Date.now()-1000*60*60 },
+      // { id:'K-1002', title:'your_title', tags:['tiger'], moves:['suplex'], kind:'image', file:'folder/your_name.png', thumb:'thumbs/your_name.webp', ts: Date.now()-1000*60*5 },
+    ];
+
+    // ====== state ======
+    const state={ q:'', pickA:new Set(), pickM:new Set(), blur:true };
+
+    // ====== helpers ======
+    const $=s=>document.querySelector(s);
+    const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    const ago=t=>{ const d=(Date.now()-t)/1000; if(d<60) return `${Math.floor(d)}s`; if(d<3600) return `${Math.floor(d/60)}m`; if(d<86400) return `${Math.floor(d/3600)}h`; return `${Math.floor(d/86400)}d`; };
+    const base=(path)=>{ const s=String(path); const i=Math.max(s.lastIndexOf('/'), s.lastIndexOf('\\')); return i>=0? s.slice(i+1): s; };
+    const ext=(path)=>{ const b=base(path); const i=b.lastIndexOf('.'); return i>=0? b.slice(i+1).toLowerCase():''; };
+
+    // 自動サムネ解決
+    function resolveThumb(p){
+      if(p.thumb) return p.thumb; // 明示指定があればそれを使う
+      const filename = base(p.file || '');
+      if(!filename) return '';
+      if(p.kind === 'video'){
+        const e = ext(filename);
+        const jpg = filename.replace(new RegExp(`\\.${e}$`,'i'), '.jpg');
+        return `${THUMB_DIR}/${jpg}`;
+      }
+      // image の場合はそのまま basename を THUMB_DIR から
+      return `${THUMB_DIR}/${filename}`;
+    }
+
+    // 実メディアのパス解決
+    function resolveSrc(p){
+      // file が相対名だけの場合は MEDIA_DIR を前置
+      const f = String(p.file||'');
+      if(!f) return '';
+      if(/^(?:https?:)?\//.test(f)) return f; // 絶対URL
+      if(f.startsWith('./') || f.startsWith('../') || f.includes('/')) return f; // 相対で明示のときはそのまま
+      return `${MEDIA_DIR}/${f}`;
+    }
+
+    // ====== filters ui ======
+    function renderFilters(){
+      const box=$('#filters'); box.innerHTML='';
+      const qwrap=document.createElement('label'); qwrap.className='badge'; qwrap.innerHTML=`<span>SEARCH</span> <input class="check" id="q2" placeholder="keywords…" value="${esc(state.q)}">`; qwrap.querySelector('input').oninput=(e)=>{ state.q=e.target.value.trim(); renderGrid(); }; box.appendChild(qwrap);
+      const titleA=document.createElement('div'); titleA.className='group-title'; titleA.textContent='TAGS (ANIMALS)'; box.appendChild(titleA);
+      const chips=document.createElement('div'); chips.className='chips';
+      TAGS.forEach(name=>{ const d=document.createElement('div'); d.className='chip'; d.dataset.on=state.pickA.has(name); d.textContent=name; d.onclick=()=>{ state.pickA.has(name)? state.pickA.delete(name):state.pickA.add(name); d.dataset.on=state.pickA.has(name); renderGrid(); }; chips.appendChild(d); });
+      box.appendChild(chips);
+      const titleM=document.createElement('div'); titleM.className='group-title'; titleM.textContent='PLAY (PRO-WRES MOVES)'; box.appendChild(titleM);
+      const chipsM=document.createElement('div'); chipsM.className='chips';
+      MOVES.forEach(name=>{ const d=document.createElement('div'); d.className='chip'; d.dataset.on=state.pickM.has(name); d.textContent=name; d.onclick=()=>{ state.pickM.has(name)? state.pickM.delete(name):state.pickM.add(name); d.dataset.on=state.pickM.has(name); renderGrid(); }; chipsM.appendChild(d); });
+      box.appendChild(chipsM);
+    }
+
+    // ====== logic ======
+    function match(p){
+      const q=state.q.toLowerCase();
+      if(q && !(p.title+"\n"+p.id+"\n"+[...p.tags,...p.moves].join(',')).toLowerCase().includes(q)) return false;
+      if(state.pickA.size && !p.tags.some(t=> state.pickA.has(t))) return false;
+      if(state.pickM.size && !p.moves.some(t=> state.pickM.has(t))) return false;
+      return true;
+    }
+
+    function renderGrid(){
+      const host=$('#grid'); host.innerHTML='';
+      POSTS.filter(match).sort((a,b)=> b.ts-a.ts).forEach((p,idx)=> host.appendChild(renderCard(p,idx)) );
+    }
+
+    function renderCard(p,idx){
+      const el=document.createElement('article'); el.className='card';
+
+      // サムネ（画像/動画で分岐）
+      const media=document.createElement(p.kind==='video'?'video':'img');
+      media.className='media ' + (p.kind==='video'?'thumb-video':'thumb-img');
+      const thumb = resolveThumb(p);
+      const src   = resolveSrc(p);
+      if(p.kind==='video'){
+        // 動画はサムネを <video> ではなく <div 背景> にしても良いが、ここではポスタ風にポスター代わりの画像を使う
+        media.poster = thumb || '';
+        media.src = src; media.muted = true; media.playsInline = true; media.loop = true; media.autoplay = true;
+      }else{
+        media.src = thumb || src; // 画像は thumb があればそれ、なければ本体
+        media.alt = '';
+      }
+      if(state.blur) media.style.filter='blur(6px)';
+      media.addEventListener('click', ()=> openLightbox(p));
+
+      const body=document.createElement('div'); body.className='body';
+      body.innerHTML = `<div class="row"><span class="flag">FAKE</span><span class="id">ID:${esc(p.id)}</span></div>
+        <div class="title">${esc(p.title)}</div>
+        <div class="tags">${p.tags.map(t=>`<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join(' ')} ${p.moves.map(m=>`<span class="tag" data-move="${esc(m)}">@${esc(m)}</span>`).join(' ')}</div>`;
+
+      // タグクリック → フィルタ状態を更新しつつ、左メニューのチップにも反映（再描画）
+      body.querySelectorAll('.tag[data-tag]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const t=e.currentTarget.dataset.tag; state.pickA.has(t)? state.pickA.delete(t): state.pickA.add(t); renderFilters(); renderGrid(); }));
+      body.querySelectorAll('.tag[data-move]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const m=e.currentTarget.dataset.move; state.pickM.has(m)? state.pickM.delete(m): state.pickM.add(m); renderFilters(); renderGrid(); }));
+
+      el.appendChild(media); el.appendChild(body); return el;
+    }
+
+    // Lightbox（常に非ブラー）
+    function openLightbox(p){
+      const lb=$('#lightbox'); const m=$('#lbMedia'); const tags=$('#lbTags');
+      const src = resolveSrc(p);
+      m.innerHTML = (p.kind === 'video')
+        ? `<video src="${src}" muted controls playsinline loop style="max-width:100%;max-height:78vh;object-fit:contain"></video>`
+        : `<img src="${src}" alt="" style="max-width:100%;max-height:78vh;object-fit:contain">`;
+      tags.innerHTML = `${p.tags.map(t=>`<span class=\"tag\" data-tag=\"${esc(t)}\">#${esc(t)}</span>`).join(' ')} ${p.moves.map(m=>`<span class=\"tag\" data-move=\"${esc(m)}\">@${esc(m)}</span>`).join(' ')}`;
+      lb.classList.add('show');
+      lb.onclick=(e)=>{ if(e.target===lb) lb.classList.remove('show'); };
+      window.onkeydown=(e)=>{ if(e.key==='Escape') lb.classList.remove('show'); };
+      // ライトボックス内のタグも連動
+      $('#lbTags').querySelectorAll('.tag[data-tag]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const t=e.currentTarget.dataset.tag; state.pickA.has(t)? state.pickA.delete(t): state.pickA.add(t); renderFilters(); renderGrid(); }));
+      $('#lbTags').querySelectorAll('.tag[data-move]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const m=e.currentTarget.dataset.move; state.pickM.has(m)? state.pickM.delete(m): state.pickM.add(m); renderFilters(); renderGrid(); }));
+    }
+
+    // header search + blur toggle
+    function setupHeader(){
+      const q=$('#q'); q.oninput=(e)=>{ state.q=e.target.value.trim(); renderGrid(); };
+      const btn=$('#blurToggle'); btn.onclick=()=>{ state.blur=!state.blur; btn.textContent= state.blur? 'BLUR':'UNBLUR'; renderGrid(); };
+      window.addEventListener('keydown',(e)=>{ if(e.key==='/'){ e.preventDefault(); q.focus(); }});
+    }
+
+    function init(){ renderFilters(); renderGrid(); setupHeader(); }
+    init();
+  </script>
+</body>
+</html>

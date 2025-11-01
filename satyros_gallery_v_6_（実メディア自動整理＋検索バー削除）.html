@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SATYROS // gallery v6</title>
+  <link rel="icon" href="symbol.png" />
+  <style>
+    :root{ --bg:#05040a;--fg:#e9fffb;--muted:#8aa39b;--line:#0d1220;--card:#090b12; --fx1:#ff2fb3;--fx2:#22d3ee;--fx3:#8b5cf6; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",Meiryo}
+
+    /* header */
+    .hdr{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(0,0,0,.8),rgba(0,0,0,.45));backdrop-filter:blur(6px)}
+    .hdr-in{max-width:1200px;margin:0 auto;padding:10px 14px;display:flex;gap:12px;align-items:center}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo img{width:28px;height:28px;filter:drop-shadow(0 0 10px rgba(255,47,179,.4))}
+    .sp{flex:1}
+    .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+
+    /* layout */
+    .wrap{max-width:1200px;margin:0 auto;padding:16px;display:grid;gap:16px;grid-template-columns:260px 1fr}
+    .panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.2));overflow:hidden}
+    .panel h3{margin:0;padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);letter-spacing:.16em}
+
+    /* left: filters */
+    .left{padding:10px;display:grid;gap:10px}
+    .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:11px;background:var(--card)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:12px;background:#0a0d16;cursor:pointer}
+    .chip[data-on="true"]{box-shadow:inset 0 0 0 1px var(--fx2)}
+    .group-title{margin:8px 0 2px 2px;color:var(--muted);font-size:11px;letter-spacing:.18em}
+
+    /* grid */
+    .grid{padding:10px;display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:780px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}
+
+    /* card */
+    .card{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#0a0f19,#090b12)}
+    .media{width:150px;height:150px;position:relative;overflow:hidden;display:block;cursor:pointer;background:#000;margin:8px auto;border-radius:8px}
+    .media > img, .media > video{width:100%;height:100%;object-fit:contain;object-position:center}
+    .body{padding:10px;display:grid;gap:6px}
+    .row{display:flex;gap:8px;align-items:center}
+    .flag{font-size:10px;border:1px solid var(--line);color:#0b1020;background:linear-gradient(180deg,#ffde59,#ff6ea5);padding:2px 6px;border-radius:6px;letter-spacing:.14em;font-weight:900}
+    .id{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono";font-size:12px;color:var(--muted)}
+    .title{font-weight:800}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+    .tag{font-size:11px;border:1px dashed var(--line);padding:2px 6px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .tag[data-on="true"]{box-shadow:inset 0 0 0 1px var(--fx2)}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);display:none;place-items:center;z-index:60}
+    .lightbox.show{display:grid}
+    .lb-inner{width:min(900px,92vw);background:#060811;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .lb-media{background:#000;display:grid;place-items:center;max-height:80vh}
+    .lb-media > img, .lb-media > video{max-width:100%;max-height:78vh;width:auto;height:auto;object-fit:contain}
+    .lb-body{padding:12px}
+
+    .foot{max-width:1200px;margin:20px auto;color:var(--muted);font-size:12px;padding:0 16px}
+  </style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-in">
+      <div class="logo"><img src="symbol.png" alt="SATYROS" /><b>SATYROS</b></div>
+      <div class="sp"></div>
+      <button class="btn" id="blurToggle">BLUR</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <aside class="panel"><h3>FILTERS</h3><div class="left" id="filters"></div></aside>
+    <section class="panel"><h3>GALLERY</h3><div class="grid" id="grid"></div></section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="preview">
+    <div class="lb-inner">
+      <div class="lb-media" id="lbMedia"></div>
+      <div class="lb-body"><div id="lbTags" class="tags"></div></div>
+    </div>
+  </div>
+
+  <footer class="foot">注記：このページは TRPG 世界観用の UI デモです。表示されるカードはすべてダミーであり、実在の人物・団体・出来事に関係しません。</footer>
+
+  <script type="module">
+    // ====== taxonomy ======
+	const FILENAMES = [
+	  "bear001.jpg",
+	  "fox003.png",
+	  "owl_rabbit.jpg",
+	  // "scene05.mp4",
+	];
+
+	const TAG_MAP = {
+	  "bear001.jpg": ["bear","deer"],
+	  "owl_rabbit.jpg": ["owl","rabbit"],
+	};
+
+	const MOVE_MAP = {
+	  "bear001.jpg": ["ddt"],
+	  "owl_rabbit.jpg": ["armbar","kneestrike"],
+	};
+
+    // ====== your files here ======
+    // 実ファイルは image/ に、サムネは image/resize/ に置き、同一ファイル名を手入力してください。
+    // 例: image/img001.jpg と image/resize/img001.jpg
+    const FILES = [
+      '25052101.jpg',
+      'img002.jpg'
+      // ここに追加
+    ];
+
+    function basename(name){ return name.replace(/\.[^.]+$/, ''); }
+    const POSTS = FILES.map((name, i)=>({
+      id: 'K-'+(1000+i),
+      title: basename(name),
+      tags: [],    // 必要なら手入力で埋めてOK
+      moves: [],
+      kind: 'image',
+      thumb: `image/resize/${name}`,
+      src:   `image/${name}`,
+      ts: Date.now() - 1000*60*(i+1)
+    }));
+
+    // ====== state ======
+    const state={ q:'', pickA:new Set(), pickM:new Set(), blur:true };
+
+    // ====== helpers ======
+    const $=s=>document.querySelector(s);
+    const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+    // ====== filters ui ======
+    function renderFilters(){
+      const host=$('#filters'); host.innerHTML='';
+      const titleA=document.createElement('div'); titleA.className='group-title'; titleA.textContent='TAGS (ANIMALS)'; host.appendChild(titleA);
+      const chips=document.createElement('div'); chips.className='chips';
+      TAGS.forEach(name=>{ const d=document.createElement('div'); d.className='chip'; d.dataset.on=state.pickA.has(name); d.textContent=name; d.onclick=()=>{ state.pickA.has(name)? state.pickA.delete(name):state.pickA.add(name); d.dataset.on=state.pickA.has(name); renderGrid(); syncChips(); }; chips.appendChild(d); });
+      host.appendChild(chips);
+      const titleM=document.createElement('div'); titleM.className='group-title'; titleM.textContent='PLAY (PRO-WRES MOVES)'; host.appendChild(titleM);
+      const chipsM=document.createElement('div'); chipsM.className='chips';
+      MOVES.forEach(name=>{ const d=document.createElement('div'); d.className='chip'; d.dataset.on=state.pickM.has(name); d.textContent=name; d.onclick=()=>{ state.pickM.has(name)? state.pickM.delete(name): state.pickM.add(name); d.dataset.on=state.pickM.has(name); renderGrid(); syncChips(); }; chipsM.appendChild(d); });
+      host.appendChild(chipsM);
+    }
+
+    function syncChips(){
+      document.querySelectorAll('.chips .chip').forEach(el=>{
+        const t=el.textContent;
+        if(TAGS.includes(t)) el.dataset.on = state.pickA.has(t);
+        if(MOVES.includes(t)) el.dataset.on = state.pickM.has(t);
+      });
+    }
+
+    // ====== logic ======
+    function match(p){
+      if(state.pickA.size && !p.tags.some(t=> state.pickA.has(t))) return false;
+      if(state.pickM.size && !p.moves.some(t=> state.pickM.has(t))) return false;
+      return true;
+    }
+
+    function renderGrid(){
+      const host=$('#grid'); host.innerHTML='';
+      POSTS.filter(match).forEach((p)=> host.appendChild(renderCard(p)) );
+    }
+
+    function renderCard(p){
+      const el=document.createElement('article'); el.className='card';
+
+      // media (thumb only triggers lightbox)
+      const media=document.createElement('div'); media.className='media';
+      if(state.blur) media.style.filter='blur(6px)';
+      const img=document.createElement('img'); img.src=p.thumb || p.src; img.alt=''; media.appendChild(img);
+      media.addEventListener('click', ()=> openLightbox(p));
+
+      // body with clickable tags
+      const body=document.createElement('div'); body.className='body';
+      body.innerHTML = `<div class="row"><span class="flag">FAKE</span><span class="id">ID:${esc(p.id)}</span></div>
+        <div class="title">${esc(p.title)}</div>
+        <div class="tags">${p.tags.map(t=>`<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join(' ')} ${p.moves.map(m=>`<span class="tag" data-move="${esc(m)}">@${esc(m)}</span>`).join(' ')}</div>`;
+
+      body.querySelectorAll('.tag[data-tag]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const t=e.currentTarget.dataset.tag; state.pickA.has(t)? state.pickA.delete(t): state.pickA.add(t); e.currentTarget.dataset.on = state.pickA.has(t); renderGrid(); syncChips(); }));
+      body.querySelectorAll('.tag[data-move]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const m=e.currentTarget.dataset.move; state.pickM.has(m)? state.pickM.delete(m): state.pickM.add(m); e.currentTarget.dataset.on = state.pickM.has(m); renderGrid(); syncChips(); }));
+
+      el.appendChild(media); el.appendChild(body); return el;
+    }
+
+    // lightbox (no blur)
+    function openLightbox(p){
+      const lb=$('#lightbox'); const m=$('#lbMedia'); const tags=$('#lbTags');
+      m.innerHTML = `<img src="${p.src}" alt="">`;
+      tags.innerHTML = `${p.tags.map(t=>`<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join(' ')} ${p.moves.map(mm=>`<span class="tag" data-move="${esc(mm)}">@${esc(mm)}</span>`).join(' ')}`;
+      lb.classList.add('show');
+      lb.onclick=(e)=>{ if(e.target===lb) lb.classList.remove('show'); };
+      window.onkeydown=(e)=>{ if(e.key==='Escape') lb.classList.remove('show'); };
+      // LB内タグも連動
+      $('#lbTags').querySelectorAll('.tag[data-tag]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const t=e.currentTarget.dataset.tag; state.pickA.has(t)? state.pickA.delete(t): state.pickA.add(t); renderGrid(); syncChips(); }));
+      $('#lbTags').querySelectorAll('.tag[data-move]').forEach(n=> n.addEventListener('click',(e)=>{ e.stopPropagation(); const mm=e.currentTarget.dataset.move; state.pickM.has(mm)? state.pickM.delete(mm): state.pickM.add(mm); renderGrid(); syncChips(); }));
+    }
+
+    // header
+    function setupHeader(){
+      const btn=$('#blurToggle'); btn.onclick=()=>{ state.blur=!state.blur; btn.textContent= state.blur? 'BLUR':'UNBLUR'; renderGrid(); };
+    }
+
+    function init(){ renderFilters(); renderGrid(); syncChips(); setupHeader(); }
+    init();
+  </script>
+</body>
+</html>
